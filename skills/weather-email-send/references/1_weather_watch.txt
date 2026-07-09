@@ -1,0 +1,24 @@
+WEATHER WATCH — {{AREA}}
+{{DATETIME}}
+
+{{HEADLINE}}
+
+Damaging winds, large hail, and isolated tornadoes possible.
+
+CURRENT CONDITIONS
+- Temp: {{CURRENT_TEMP}}
+- Wind: {{CURRENT_WIND}}
+- Humidity: {{CURRENT_HUMIDITY}}
+- Pressure: {{CURRENT_PRESSURE}}
+
+SPC DAY 1 OUTLOOK
+Categorical: {{SPC_CATEGORICAL}}. Stay alert through the day.
+
+ACTION LIST
+{{ACTION_LIST}}
+
+LIVE SOURCES
+{{LIVE_SOURCES}}
+
+---
+Sent via AgentMail · 1st in weather alert series · Monitor updates every {{POLL_INTERVAL}} min

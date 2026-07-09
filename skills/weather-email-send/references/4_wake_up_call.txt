@@ -1,0 +1,1 @@
+{ "placeholder": "true", "note": "Stub — copy from 1_weather_watch.txt, prepend WAKE-UP CALL banner, add Don't Let the Current Lull Fool You explanation." }

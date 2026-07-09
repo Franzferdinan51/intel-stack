@@ -1,0 +1,13 @@
+{
+  "level": 4,
+  "level_name": "wake_up_call",
+  "subject_pattern": "WAKE-UP CALL: Tonight {TIME_WINDOW} is the REAL Threat - {AREA}",
+  "subject_examples": [
+    "WAKE-UP CALL: Tonight 10 PM - 4 AM is the REAL Threat - Your County, ST"
+  ],
+  "recipients_source": "ALERT_RECIPIENTS env var",
+  "tone": "Most urgent. All-caps subject. Repeats that this is the main event. 'DON'T LET THE CURRENT LULL FOOL YOU.'",
+  "send_when": "Final-hour heads-up. The lull can fool people. Strong storms imminent (1-3 hours).",
+  "requires_operator_confirmation": true,
+  "operator_heads_up": true
+}

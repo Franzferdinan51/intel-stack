@@ -1,0 +1,10 @@
+{
+  "name": "Weather Watchdog",
+  "description": "Runs the full pull → monitor → trigger → send pipeline every 15 min during active weather, every hour otherwise.",
+  "schedule": "*/15 * * * *",
+  "enabled": true,
+  "deliver": "local",
+  "model": "any-fast",
+  "prompt": "You are the Weather Watchdog cron.\n\nRun the full weather intelligence pipeline:\n1. Invoke skill `weather-pull` with current HOME_LAT/HOME_LON env vars.\n2. Invoke skill `weather-monitor` to compare against prior state.\n3. If escalation detected, invoke skill `weather-email-trigger`.\n4. If the trigger returns fire=true and requires_confirmation=false, invoke skill `weather-email-send`.\n5. If the trigger returns fire=true and requires_confirmation=true, send a Telegram heads-up to the operator and DO NOT send the email. Wait for operator `go`.\n6. Log the run summary to ~/.openclaw/workspace/logs/weather-watchdog.log\n\nCADENCE: This cron should fire every 15 min during SPC ENH+ or any active warning, every 60 min otherwise. Adjust the schedule based on current_level from the monitor state.\n\nNEVER auto-fire level 4 (WAKE-UP CALL). NEVER add recipients to ALERT_RECIPIENTS. NEVER pull data for any location other than HOME_LAT/HOME_LON.",
+  "skills": ["weather-pull", "weather-monitor", "weather-email-trigger", "weather-email-send"]
+}

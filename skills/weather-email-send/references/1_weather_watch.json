@@ -1,0 +1,11 @@
+{
+  "level": 1,
+  "level_name": "weather_watch",
+  "subject_pattern": "Weather Watch - {AREA} - {DAY} {DATE} Severe Storm Threat",
+  "subject_examples": [
+    "Weather Watch - Your County, ST - Wed Jun 17 Severe Storm Threat"
+  ],
+  "recipients_source": "ALERT_RECIPIENTS env var",
+  "tone": "Informational. 'Damaging winds, large hail, isolated tornadoes possible.'",
+  "send_when": "First notice. Forecast just turned concerning. 12-36h out."
+}

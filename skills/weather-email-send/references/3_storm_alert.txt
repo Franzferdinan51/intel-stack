@@ -1,0 +1,1 @@
+{ "placeholder": "true", "note": "Stub — copy from 1_weather_watch.txt, prepend STORM ALERT banner, add WHAT TO EXPECT bullet list." }

@@ -1,0 +1,12 @@
+{
+  "level": 3,
+  "level_name": "storm_alert",
+  "subject_pattern": "Storm Alert: {AREA} - Tonight {TIME_WINDOW} - Tornadoes + 80 mph Wind Possible",
+  "subject_examples": [
+    "Storm Alert: Your County, ST - Tonight 9 PM-Midnight - Tornadoes + 80 mph Wind Possible"
+  ],
+  "recipients_source": "ALERT_RECIPIENTS env var",
+  "tone": "Action-oriented. Name the threat, name the window. 'STRONG TORNADOES POSSIBLE - TONIGHT 9 PM to MIDNIGHT.'",
+  "send_when": "Imminent. Hours away. Strong tornadoes or damaging wind expected within 6 hours.",
+  "operator_heads_up": true
+}

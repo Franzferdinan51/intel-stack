@@ -1,0 +1,12 @@
+# Intelligence Stack — Runtime Dependencies
+# Pin to compatible release ranges; update when bumping versions.
+
+# Email transport
+agentmail>=0.5.0,<1.0
+
+# HTTP for ad-hoc API calls (web_extract handles most of this,
+# but the orchestrator script may use requests directly)
+requests>=2.31.0,<3.0
+
+# Standard library used: urllib, json, datetime, argparse, pathlib, os, sys
+# (No need to list these in requirements.txt.)

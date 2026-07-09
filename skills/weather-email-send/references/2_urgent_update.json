@@ -1,0 +1,11 @@
+{
+  "level": 2,
+  "level_name": "urgent_update",
+  "subject_pattern": "URGENT UPDATE: Level {N} of 5 - {DAY} {DATE} Severe Storm Threat - {AREA}",
+  "subject_examples": [
+    "URGENT UPDATE: Level 4 of 5 - Wed Jun 17 Severe Storm Threat - Your County, ST"
+  ],
+  "recipients_source": "ALERT_RECIPIENTS env var",
+  "tone": "Bold, direct. Reference the SPC level (1-5) if known. 'FORECAST ESCALATED since {previous_time}'.",
+  "send_when": "Risk level escalated since the previous email."
+}
