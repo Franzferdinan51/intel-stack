@@ -1,0 +1,12 @@
+{
+  "level": "level_2_high",
+  "defcon_level": 2,
+  "subject_pattern": "DEFCON {DEFCON_LEVEL} ALERT: {HEADLINE_SHORT}",
+  "subject_examples": [
+    "DEFCON 2 ALERT: High Threat Level — Multiple Active Threats Detected"
+  ],
+  "recipients_source": "DEFCON_ALERT_RECIPIENTS env var",
+  "tone": "Serious, action-oriented. 'Multiple threats detected. Review action list and verify information via live sources.'",
+  "send_when": "Transition to DEFCON 2 (high threat). Fires once per escalation.",
+  "auto_fire": true
+}

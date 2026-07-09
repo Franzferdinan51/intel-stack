@@ -4,15 +4,18 @@
 
 This stack started as inline skills in a private agent runtime. The original skills were tightly coupled to a specific person, location, and recipient list. By splitting them into a standalone repo with env-driven configuration, anyone can clone it and adapt it for their own home location, recipient list, and escalation rules.
 
-## Why 4 skills, not 1?
+## Why 8 skills, not 1?
 
-Each skill has one job:
-- `weather-pull` — pure data gathering (no logic)
-- `weather-monitor` — pure state tracking (no send)
-- `weather-email-trigger` — pure decision logic (no data, no send)
-- `weather-email-send` — pure sending (no decision)
+Each skill has one job. The architecture supports **multiple domains** — currently weather (4 skills, 4-level ladder) and DEFCON (4 skills, 2-level ladder). All 8 share the same pull → monitor → trigger → send chain.
 
-This separation lets you swap any layer independently. Want to add a Discord bot instead of email? Replace `weather-email-send` and keep everything else. Want to use a different data source? Replace `weather-pull`. Want different escalation rules? Replace `weather-email-trigger`.
+| Domain | Skills | Levels |
+|---|---|---|
+| Weather | weather-pull, weather-monitor, weather-email-trigger, weather-email-send | 4-level ladder (Watch / URGENT UPDATE / Storm Alert / WAKE-UP CALL) |
+| DEFCON | defcon-pull, defcon-monitor-email, defcon-email-trigger, defcon-email-send | 2-level ladder (level 2 high / level 1 emergency) |
+
+This separation lets you swap any layer independently. Want to add a Discord bot instead of email? Replace `*-email-send` and keep everything else. Want to use a different data source? Replace `*-pull`. Want different escalation rules? Replace `*-email-trigger`.
+
+The same pattern extends to seismic, civic, air-quality, financial, or any other domain — just add 4 more skills. See [`extending.md`](extending.md).
 
 ## Why a strict geographic scope?
 

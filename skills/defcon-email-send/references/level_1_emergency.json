@@ -1,0 +1,13 @@
+{
+  "level": "level_1_emergency",
+  "defcon_level": 1,
+  "subject_pattern": "DEFCON {DEFCON_LEVEL} EMERGENCY: {HEADLINE_SHORT}",
+  "subject_examples": [
+    "DEFCON 1 EMERGENCY: Maximum Threat Level — Take Immediate Action"
+  ],
+  "recipients_source": "DEFCON_ALERT_RECIPIENTS env var",
+  "tone": "Maximum urgency. All-caps subject. 'This is the highest threat level. Take immediate action per the action list.'",
+  "send_when": "Transition to DEFCON 1 (nuclear war imminent / maximum threat). Requires operator confirmation before fire.",
+  "auto_fire": false,
+  "requires_operator_confirmation": true
+}

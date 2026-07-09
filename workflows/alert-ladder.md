@@ -1,6 +1,11 @@
-# Alert Ladder
+# Alert Ladders
 
-The 4-level escalation ladder used by the `weather-monitor` and `weather-email-trigger` skills.
+The escalation ladders used by the Intelligence Stack. Two domains, two ladders:
+
+1. **Weather** — 4-level ladder (Watch / URGENT UPDATE / Storm Alert / WAKE-UP CALL)
+2. **DEFCON** — 2-level ladder (level 2 high / level 1 emergency) — levels 3-5 are silent
+
+Both ladders share the same `pull → monitor → trigger → send` architecture. Only the trigger logic differs.
 
 ## Visual
 
@@ -83,3 +88,91 @@ Every email MUST pass the geographic scope filter. See `skills/weather-email-tri
 - ❌ Force-fire level 4 from cron: NEVER. Level 4 requires human judgment.
 - ✅ Override cooldowns: just add `--send` to bypass dry-run and use the override flag.
 - ❌ Skip geographic scope filter: NEVER. Wrong-region emails are the #1 trust-killer.
+
+---
+
+# DEFCON Ladder (2 levels)
+
+The DEFCON domain uses a much tighter ladder than weather — only 2 email levels. Levels 3-5 are silent because existing Telegram/Slack notifiers (in your main DEFCON monitor) already cover them.
+
+## Visual
+
+```
+            ┌─────────────────────────────────────────────────────────────┐
+            │                  DEFCON LADDER (EMAIL ONLY)                 │
+            └─────────────────────────────────────────────────────────────┘
+
+   DEFCON 5        DEFCON 4        DEFCON 3        DEFCON 2        DEFCON 1
+   ────────        ────────        ────────        ────────        ────────
+   PEACETIME       ELEVATED        HIGH            DEFCON 2        DEFCON 1
+   (no threat)     (routine)       (active)        (HIGH)          (EMERGENCY)
+
+        │               │               │               │                │
+        │               │               │               │                │
+   ┌─────────┐     ┌─────────┐    ┌─────────┐    ┌─────────────┐   ┌─────────────┐
+   │ No email│     │ No email│    │ No email│    │ DEFCON 2    │   │ DEFCON 1    │
+   │ Silent  │     │ Silent  │    │ Silent  │    │ ALERT       │   │ EMERGENCY   │
+   │         │     │         │    │         │    │             │   │             │
+   │ Auto:NO │     │ Auto:NO │    │ Auto:NO │    │ Auto:YES    │   │ Auto:NO     │
+   │         │     │         │    │         │    │             │   │ Operator `go`│
+   └─────────┘     └─────────┘    └─────────┘    └─────────────┘   └─────────────┘
+                                                       │                │
+                                                       ▼                ▼
+                                              Subject: "DEFCON 2    Subject: "DEFCON 1
+                                              ALERT: ..."            EMERGENCY: ..."
+                                              Red gradient           Black + red
+                                              on white               (most aggressive)
+
+
+                          ┌──────────────────────────────────────────────────────┐
+                          │  DEFCON direction is INVERSE: lower number = more   │
+                          │  threat. DEFCON 1 = nuclear war imminent.           │
+                          └──────────────────────────────────────────────────────┘
+```
+
+## DEFCON Email Level Definitions
+
+| DEFCON level | Email level | Subject prefix | Auto-fire? |
+|---|---|---|---|
+| 5, 4, 3 | — | — | — (silent, Telegram/Slack only) |
+| 2 (high) | `level_2_high` | `DEFCON 2 ALERT: <headline>` | ✅ Yes |
+| 1 (emergency) | `level_1_emergency` | `DEFCON 1 EMERGENCY: <headline>` | ❌ Operator `go` required |
+
+## DEFCON State Transitions
+
+```
+DEFCON 5/4/3 ──escalation──> DEFCON 2 ──escalation──> DEFCON 1
+     ↑                            │                        │
+     │                            │                        │
+     └─────── de-escalation ──────┴──────── de-escalation ─┘
+```
+
+**Emails only fire on escalations.** A de-escalation (e.g. 1 → 2) is good news but we don't email about it. The operator already knows the threat is reduced.
+
+## Cooldown Rules (DEFCON)
+
+| Rule | Default |
+|---|---|
+| Same level | **6 hours minimum** (DEFCON events are rare — don't spam) |
+| Escalation (e.g. 2 → 1) | 6 hours |
+| De-escalation | No email |
+| Operator force-fire | Skip cooldown |
+
+## When to Override
+
+- ✅ Force-fire DEFCON 2 manually: `python scripts/send_defcon_alert.py --send --level level_2_high`
+- ❌ Auto-fire DEFCON 1: NEVER. DEFCON 1 ALWAYS requires operator `go`. False DEFCON 1 emails destroy trust permanently.
+- ✅ Override cooldowns for DEFCON 2: `--send` flag bypasses dry-run.
+- ❌ Re-fire while sustained at the same level: NEVER. Only transitions trigger.
+
+## Why DEFCON 3-5 Are Silent
+
+If you already have Telegram/Slack notifications firing on every DEFCON escalation, you don't need emails for the routine levels. The email pipeline exists specifically for the **rare, consequential events** — DEFCON 1 (emergency) and DEFCON 2 (high). Sustained DEFCON 3 with no escalation doesn't justify an email blast.
+
+If you want a different threshold (e.g. email on DEFCON 3), edit `defcon-email-trigger` SKILL.md step 3 and the corresponding `compute_current_alert_level()` logic in your monitor.
+
+## Cross-Domain Correlation
+
+If both ladders fire at the same time (e.g. DEFCON 2 + weather Storm Alert), the email-trigger skill for each domain runs independently. You may receive two emails. This is intentional — the action lists are different (one tells you to take political action, the other tells you to take shelter), and consolidating them would lose information.
+
+Future versions may add a "cross-domain amplifier" skill that detects compound threats and increases severity. See [`docs/extending.md`](../docs/extending.md).

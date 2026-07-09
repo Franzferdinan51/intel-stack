@@ -1,0 +1,15 @@
+{
+  "name": "DEFCON Email Watchdog",
+  "description": "Runs every 15 min. Emails only fire on transitions to DEFCON 2 or 1. DEFCON 1 requires operator confirmation.",
+  "schedule": "*/15 * * * *",
+  "enabled": true,
+  "deliver": "telegram,local",
+  "model": "any-fast",
+  "prompt": "You are the DEFCON Email Watchdog cron.\n\nGOAL: Detect transition to DEFCON 1 or 2 and send an alert email via AgentMail. Levels 3-5 are SILENT (existing Telegram/Slack notifiers cover those).\n\nPIPELINE (run in order):\n1. Invoke skill `defcon-pull`. Get the current DEFCON level + active threats.\n2. Invoke skill `defcon-monitor-email`. Compare to prior state, write to ~/.openclaw/workspace/state/defcon-email.json.\n3. If alert_level transitioned to 'high' (DEFCON 2) or 'emergency' (DEFCON 1), invoke skill `defcon-email-trigger`.\n4. If trigger returns fire=true and requires_confirmation=false, invoke skill `defcon-email-send` (this loads the HTML+CSS template and sends via AgentMail).\n5. If trigger returns fire=true and requires_confirmation=true (DEFCON 1), DO NOT send. Push a Telegram heads-up to the operator with the headline + action list, and wait for explicit `go`.\n\nHARD RULES:\n- NEVER auto-fire level_1_emergency. DEFCON 1 ALWAYS requires operator `go`.\n- NEVER send on de-escalation (e.g. 1 -> 2). No email on de-escalation.\n- NEVER re-fire while sustained at the same level. Only transitions trigger.\n- NEVER add recipients to DEFCON_ALERT_RECIPIENTS. Operator must edit .env themselves.\n- Cooldown: 6 hours minimum between any DEFCON emails.\n\nSTATE FILE: ~/.openclaw/workspace/state/defcon-email.json (separate from the main DEFCON state).\n\nLOG OUTPUT: Append a one-line summary to ~/.openclaw/workspace/logs/defcon-email-watchdog.log on each tick.",
+  "skills": [
+    "defcon-pull",
+    "defcon-monitor-email",
+    "defcon-email-trigger",
+    "defcon-email-send"
+  ]
+}

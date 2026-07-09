@@ -1,6 +1,6 @@
 # Extending the Stack
 
-The weather pipeline is just **one application** of a more general pattern:
+The weather and DEFCON pipelines are **two applications** of a more general pattern:
 
 ```
 pull → monitor → trigger → send
@@ -10,16 +10,20 @@ You can reuse the same architecture for other intelligence domains. This doc wal
 
 ## Pattern Reuse
 
-Each of the four weather skills has a job that doesn't depend on weather specifics:
+Each of the eight skills (4 weather + 4 DEFCON) has a job that doesn't depend on domain specifics:
 
-| Weather skill | Generalized role | Reusable? |
+| Domain skill | Generalized role | Reusable? |
 |---|---|---|
-| `weather-pull` | Pull data from a public API | Yes — copy structure, swap endpoints |
+| `weather-pull` | Pull data from public APIs | Yes — copy structure, swap endpoints |
 | `weather-monitor` | Detect state changes over time | Yes — generic enough as-is |
 | `weather-email-trigger` | Decide if/when to alert + scope + cooldown | Yes — works for any domain |
 | `weather-email-send` | Render HTML + send | Yes — copy template structure |
+| `defcon-pull` | Pull composite state from existing infra | Yes — env-driven state path |
+| `defcon-monitor-email` | Detect escalation to alert thresholds | Yes — uses separate state file |
+| `defcon-email-trigger` | Trigger logic for transitions | Yes — fires only on escalation |
+| `defcon-email-send` | 2-level HTML template + AgentMail | Yes — inline CSS, action list, repo links |
 
-To extend, replace each weather-specific bit with your domain's logic. The contracts (input/output JSON shapes) stay the same.
+To extend, replace each domain-specific bit with your new domain's logic. The contracts (input/output JSON shapes) stay the same.
 
 ## Example: Seismic Monitor (USGS Earthquakes)
 

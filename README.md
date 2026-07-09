@@ -1,8 +1,11 @@
 # Intelligence Stack
 
-An open, modular stack of skills, workflows, and reference docs for building an automated **weather intelligence + alerting pipeline** (and eventually other intelligence domains) on top of the [Hermes Agent](https://hermes-agent.nousresearch.com/docs) runtime.
+An open, modular stack of skills, workflows, and reference docs for building **automated intelligence + alerting pipelines** on top of the [Hermes Agent](https://hermes-agent.nousresearch.com/docs) runtime. Currently covers **two domains** with a shared 4-skill architecture:
 
-The stack pulls data from verified public sources (NOAA NWS, SPC, FEMA, local radar), tracks state over time, decides whether to alert, and — when warranted — sends beautifully-styled HTML email alerts. It is geographic-scope-aware, anti-injection, and never auto-fires Level 4 (the most urgent tier) without operator confirmation.
+- **Weather** — NWS / SPC / FEMA / radar-driven alerts for a single home location (4 escalation levels)
+- **DEFCON** — Multi-domain composite threat-level alerts (DEFCON 1 emergency + DEFCON 2 high)
+
+The architecture is domain-agnostic: pull → monitor → trigger → send. Each step is a standalone skill with one job. Adding seismic, civic, air-quality, or financial monitoring is just adding 4 more skills.
 
 > **TL;DR.** Pull → Monitor → Decide → Send. Each step is a standalone skill with one job.
 
@@ -85,7 +88,9 @@ Each skill is independent: you can replace any layer with your own implementatio
 
 ## Skills
 
-All four skills live under [`skills/`](skills/). Each is a standalone Hermes skill with its own `SKILL.md`, optional `references/`, and a clear contract.
+All skills live under [`skills/`](skills/). Each is a standalone Hermes skill with its own `SKILL.md`, optional `references/`, and a clear contract.
+
+### Weather Domain (4 skills, 4-level ladder)
 
 | Skill | Purpose | Inputs | Outputs |
 |---|---|---|---|
@@ -94,7 +99,7 @@ All four skills live under [`skills/`](skills/). Each is a standalone Hermes ski
 | [`weather-email-trigger`](skills/weather-email-trigger/SKILL.md) | Decide IF and WHEN an email should fire (scope, cooldown, level) | weather-monitor state | Decision object |
 | [`weather-email-send`](skills/weather-email-send/SKILL.md) | Render HTML template, send via AgentMail | email-trigger decision, recipient list | Sent message IDs |
 
-The escalation ladder across all four skills:
+The 4-level weather escalation ladder:
 
 | Monitor level | Email level | Subject prefix | Auto-fire? |
 |---|---|---|---|
@@ -102,7 +107,24 @@ The escalation ladder across all four skills:
 | `watch` | 1 | `Weather Watch - <Area> OH - <Day> <Date> ...` | ✅ Yes |
 | `warning` | 2 | `URGENT UPDATE: Level N of 5 - ...` | ✅ Yes |
 | `emergency` | 3 | `Storm Alert: <Area> - Tonight ... - Tornadoes + 80 mph Wind Possible` | ✅ Yes + Telegram heads-up |
-| `emergency` 22:00–04:00 local | 4 | `WAKE-UP CALL: Tonight ... is the REAL Threat - <Area>` | ❌ Operator `go` required |
+| `emergency` 22:00–04:00 local | 4 | `WAKE-UP CALL: Tonight ... is the REAL Threat - <Area>` | ❌ Operator `go` |
+
+### DEFCON Domain (4 skills, 2-level ladder)
+
+| Skill | Purpose | Inputs | Outputs |
+|---|---|---|---|
+| [`defcon-pull`](skills/defcon-pull/SKILL.md) | Pull DEFCON level + active threats from state file + OSINT | DEFCON_STATE_PATH, optional ClawdWatch URL | Structured JSON summary |
+| [`defcon-monitor-email`](skills/defcon-monitor-email/SKILL.md) | Track DEFCON transitions to 1 or 2, maintain alert state | defcon-pull output, prior state | Updated state + change record |
+| [`defcon-email-trigger`](skills/defcon-email-trigger/SKILL.md) | Decide IF and WHEN a DEFCON email fires (only on transitions to 1 or 2) | defcon-monitor-email state | Decision object |
+| [`defcon-email-send`](skills/defcon-email-send/SKILL.md) | Render HTML+CSS, send via AgentMail with action list | email-trigger decision, recipient list | Sent message IDs |
+
+The 2-level DEFCON ladder (levels 3-5 are silent — existing Telegram/Slack notifiers cover those):
+
+| DEFCON level | Email level | Subject prefix | Auto-fire? |
+|---|---|---|---|
+| 5, 4, 3 | — | — | — (silent) |
+| 2 (high) | `level_2_high` | `DEFCON 2 ALERT: ...` | ✅ Yes |
+| 1 (emergency) | `level_1_emergency` | `DEFCON 1 EMERGENCY: ...` | ❌ Operator `go` required |
 
 ---
 
@@ -110,10 +132,20 @@ The escalation ladder across all four skills:
 
 Pre-built cron jobs and orchestrator scripts under [`workflows/`](workflows/):
 
-- **`cron-weather-watchdog.json`** — Hermes cron definition, fires every 15 min during active weather, every hour otherwise. Calls weather-pull → weather-monitor → weather-email-trigger.
-- **`orchestrate_alert.py`** — Single-shot script that runs the whole pipeline from a manual trigger (e.g. operator says "send a level 2 update").
+### Weather Pipeline
+- **`cron-weather-watchdog.json`** — Hermes cron definition, fires every 15 min during active weather, every hour otherwise. Calls weather-pull → weather-monitor → weather-email-trigger → weather-email-send.
+
+### DEFCON Pipeline
+- **`cron-defcon-watchdog.json`** — Hermes cron definition, fires every 15 min. Calls defcon-pull → defcon-monitor-email → defcon-email-trigger → defcon-email-send. Emails only fire on transitions to DEFCON 2 or 1 (operator `go` required for DEFCON 1).
+
+### Email Inbox Health
 - **`agentmail-daily-healthcheck.json`** — Daily inbox sweep with anti-injection rules (does NOT download attachments, NEVER follows URLs in email bodies, treats every email as untrusted data).
-- **`alert-ladder.md`** — Visual reference for the 4-level escalation + when each level is appropriate.
+
+### Reference
+- **`alert-ladder.md`** — Visual reference for both ladders: 4-level weather + 2-level DEFCON escalation rules + when each level is appropriate.
+
+### Orchestrator
+- **`scripts/orchestrate_alert.py`** — Standalone Python script that runs the weather pipeline from a manual trigger (e.g. operator says "send a level 2 update").
 
 See [`workflows/README.md`](workflows/README.md) for setup.
 
