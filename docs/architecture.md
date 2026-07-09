@@ -29,7 +29,7 @@ The Intelligence Stack is a **multi-domain** alerting pipeline. Each domain (wea
 │  │ defcon-pull  │ -> │defcon-monitor│ -> │defcon-email- │              │
 │  │              │    │  -email      │    │  trigger     │              │
 │  │ • State file │    │ • Escalation │    │ • Transition │              │
-│  │ • ClawdWatch │    │ • 6h cooldown│    │ • DEFCON 1 = │              │
+│  │ • ClawdWatch (LE) │    │ • 6h cooldown│    │ • DEFCON 1 = │              │
 │  │ • Web        │    │ • DEFCON 1/2 │    │   op confirm │              │
 │  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘              │
 │         │                   │                   │                      │
@@ -57,7 +57,7 @@ Both domains share the same flow. Here's the DEFCON example:
         ▼
 2. defcon-pull
    - Reads DEFCON_STATE_PATH (env var)
-   - Tries ClawdWatch at localhost:3444
+   - Tries ClawdWatch (Lobster Edition) at localhost:3444
    - Falls back to web_extract on defconlevel.com
    - Returns: {level, threat_score, active_threats, per_domain_scores, ...}
         │
@@ -118,7 +118,7 @@ Each skill exposes one JSON-shaped contract.
     "cyber": {"value": 12, "max": 15, "detail": "..."}
   },
   "escalation_signal": "high",
-  "sources_ok": ["state_file", "clawdwatch"]
+  "sources_ok": ["state_file", "clawdwatch_lobster_edition"],
 }
 ```
 
@@ -282,7 +282,7 @@ Each skill exposes one JSON-shaped contract.
 |---|---|---|
 | NWS API down (weather) | `sources_ok` excludes `nws_api` | Skip send. Alert operator via Telegram. |
 | DEFCON state file missing | pull returns `null` | Skip send. Treat as `alert_level: none`. |
-| ClawdWatch down | pull returns `state_file` only | Continue. State file is authoritative. |
+| ClawdWatch (Lobster Edition) down | pull returns `state_file` only | Continue. State file is authoritative. |
 | AgentMail API down | `send()` throws | Retry next cron tick. State unchanged. |
 | State file corrupted | JSON parse error | Reset to `{"current_*: "none"}`. No email until next escalation. |
 | Wrong home location in config (weather) | Scope filter rejects all alerts | Operator must fix `HOME_LAT/LON/COUNTY` env vars. |

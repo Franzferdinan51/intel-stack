@@ -79,7 +79,7 @@ You can also drive the pipeline manually from chat:
 │  WEATHER         │    │  DEFCON          │         │  INBOX HEALTH    │
 │                  │    │                  │         │                  │
 │ NWS  api.weather │    │ defcon-state     │         │ agentmail.in     │
-│ SPC  spc.noaa.gov│    │ ClawdWatch :3444 │         │ (inbound mail)   │
+│ SPC  spc.noaa.gov│    │ ClawdWatch (LE) :3444 │         │ (inbound mail)   │
 │ FEMA fema.gov    │    │ defconlevel.com  │         │                  │
 │ Radar NEXRAD     │    │ 16-domain OSINT  │         │                  │
 └────────┬─────────┘    └────────┬─────────┘         └────────┬─────────┘
@@ -138,7 +138,7 @@ The 4-level weather escalation ladder:
 
 | Skill | Purpose | Inputs | Outputs |
 |---|---|---|---|
-| [`defcon-pull`](skills/defcon-pull/SKILL.md) | Pull DEFCON level + active threats from state file + OSINT | `DEFCON_STATE_PATH`, optional ClawdWatch URL | Structured JSON summary |
+| [`defcon-pull`](skills/defcon-pull/SKILL.md) | Pull DEFCON level + active threats from state file + OSINT | `DEFCON_STATE_PATH`, optional ClawdWatch Lobster Edition URL | Structured JSON summary |
 | [`defcon-monitor-email`](skills/defcon-monitor-email/SKILL.md) | Track DEFCON transitions to 1 or 2, maintain alert state | defcon-pull output, prior state | Updated state + change record |
 | [`defcon-email-trigger`](skills/defcon-email-trigger/SKILL.md) | Decide IF and WHEN a DEFCON email fires (only on transitions to 1 or 2) | defcon-monitor-email state | Decision object |
 | [`defcon-email-send`](skills/defcon-email-send/SKILL.md) | Render HTML+CSS, send via AgentMail with action list | email-trigger decision, recipient list | Sent message IDs |
@@ -194,7 +194,7 @@ These skills were originally extracted from a larger private agent runtime. The 
 | **NWS API Docs** | Weather forecasts + alerts (US National Weather Service) | [weather.gov/documentation/services-web-api](https://www.weather.gov/documentation/services-web-api) |
 | **SPC Products** | Storm Prediction Center outlooks + mesoscale discussions | [spc.noaa.gov](https://www.spc.noaa.gov/) |
 | **FEMA OpenFEMA** | IPAWS archived alerts (WEA / EAS) | [fema.gov/api/open](https://www.fema.gov/about/openfema) |
-| **ClawdWatch** (optional) | Live DEFCON composite score source (local server) | Runs on `localhost:3444` |
+| **ClawdWatch (Lobster Edition)** | Our fork — live DEFCON composite score source (local server) | [Franzferdinan51/clawdwatch-lobster-edition](https://github.com/Franzferdinan51/clawdwatch-lobster-edition) |
 
 > If you maintain a related project (skill library, weather wrapper, alert framework), open an issue and we'll link it here.
 
@@ -311,7 +311,7 @@ See [`docs/security.md`](docs/security.md) for the full threat model.
 
 ### DEFCON
 - [ ] Wire DEFCON 1 templates to include the full PDF brief as an attachment (currently HTML+CSS only)
-- [ ] Add ClawdWatch MCP integration as a fallback live source
+- [ ] Add ClawdWatch (Lobster Edition) MCP integration as a fallback live source
 - [ ] Cross-domain amplifier: detect compound threats (e.g. DEFCON 2 + local Storm Alert → escalate)
 
 ### General

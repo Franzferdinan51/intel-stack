@@ -134,7 +134,7 @@ This skill chains into the broader Intelligence Stack. Clone or fork these to ge
 | **Intelligence Stack** (umbrella repo) | The 4-skill email pipeline + orchestrator | [Franzferdinan51/intel-stack](https://github.com/Franzferdinan51/intel-stack) |
 | **Hermes Agent** | The agent runtime this skill runs on | [nousresearch/hermes-agent](https://github.com/nousresearch/hermes-agent) |
 | **AgentMail Python SDK** | Email send/receive (`pip install agentmail`) | [docs.agentmail.to](https://docs.agentmail.to) |
-| **ClawdWatch** (optional) | Live DEFCON composite score source | Local server on port 3444 |
+| **ClawdWatch** (optional) | Live DEFCON composite score source | Local server on port 3444 (our Lobster Edition fork) |
 
 ## Template Customization
 

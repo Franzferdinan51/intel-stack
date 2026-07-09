@@ -24,7 +24,7 @@ Pulls the current DEFCON threat level and active threats from existing DEFCON st
 This skill reads from existing infrastructure:
 
 - **DEFCON state file** at `~/.openclaw/memory/defcon-state.json` — canonical state written by your DEFCON monitor after every scan. Path is configurable.
-- **ClawdWatch server** (optional, if running) — `http://localhost:3444/defcon/score` returns the latest composite level + score.
+- **ClawdWatch (Lobster Edition)** server (optional, if running) — `http://localhost:3444/defcon/score` returns the latest composite level + score. This is our [forked version](https://github.com/Franzferdinan51/clawdwatch-lobster-edition), modified from the upstream ClawdWatch project.
 - **`defconlevel.com`** (fallback) — `https://www.defconlevel.com/alerts/european-command` for EUCOM-style signals.
 
 ## Prerequisites
@@ -40,7 +40,7 @@ Invoke through `terminal`. Runs in <1 second.
 ## Quick Reference
 
 - State path: `~/.openclaw/memory/defcon-state.json` (configurable via env var `DEFCON_STATE_PATH`)
-- ClawdWatch (live): `http://localhost:3444/defcon/score`
+- ClawdWatch (Lobster Edition) (live): `http://localhost:3444/defcon/score`
 - Web fallback: `https://www.defconlevel.com/alerts/european-command`
 - DEFCON scale: 1 (nuclear war imminent) ↔ 5 (peacetime)
 
@@ -52,7 +52,7 @@ Invoke through `terminal`. Runs in <1 second.
    ```
    Extract: `current_level`, `threat_score`, `last_reason`, `last_updated`, `scores` (per-domain breakdown), `active_threats[]`.
 
-2. **Try ClawdWatch** (live cross-check) through `terminal`:
+2. **Try ClawdWatch (Lobster Edition)** (live cross-check) through `terminal`:
    ```bash
    curl -s --max-time 5 http://localhost:3444/defcon/score
    ```
@@ -65,7 +65,7 @@ Invoke through `terminal`. Runs in <1 second.
    ```
    Parse for the current EUCOM DEFCON level + headline.
 
-4. **Cross-validate.** If the state file says level 2 but ClawdWatch says level 4, take the **higher** of the two (fail-safe). If they agree, use that value.
+4. **Cross-validate.** If the state file says level 2 but ClawdWatch (Lobster Edition) says level 4, take the **higher** of the two (fail-safe). If they agree, use that value.
 
 5. **Compile and return**:
    ```json
@@ -90,10 +90,10 @@ Invoke through `terminal`. Runs in <1 second.
 ## Pitfalls
 
 - **State file may be stale.** `last_updated_utc` should be within the last 6 hours. If older, treat as "stale — run your DEFCON monitor first" and return level 5 (safest).
-- **ClawdWatch may be down.** Use the web fallback. Don't fail the whole pull.
+- **ClawdWatch (Lobster Edition) may be down.** Use the web fallback. Don't fail the whole pull.
 - **DEFCON levels are integers 1-5 only.** State file might have float-like values in `threat_score` (0-100). The level is the integer; the score is the continuous signal.
 - **Active threats can be empty array.** That's fine — DEFCON can still be elevated by domain scores alone.
-- **`current_level` in state file is the SUSTAINED level.** For real-time spikes, prefer ClawdWatch.
+- **`current_level` in state file is the SUSTAINED level.** For real-time spikes, prefer ClawdWatch (Lobster Edition).
 
 ## Verification
 
@@ -117,5 +117,5 @@ Expected: `OK level: <1-5> score: <0-100> updated: <iso8601>`. If `NO STATE FILE
 |---|---|
 | **Intelligence Stack** (umbrella repo) | [Franzferdinan51/intel-stack](https://github.com/Franzferdinan51/intel-stack) |
 | **Hermes Agent** | [nousresearch/hermes-agent](https://github.com/nousresearch/hermes-agent) |
-| **ClawdWatch** (optional live source) | Local server on port 3444 |
+| **ClawdWatch** (optional live source) | Local server on port 3444 (our Lobster Edition fork) |
 | **AgentMail SDK** | [docs.agentmail.to](https://docs.agentmail.to) |

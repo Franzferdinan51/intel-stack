@@ -91,8 +91,8 @@ Invoke through `terminal` + `read_file`/`write_file`. State updates happen every
 - **DEFCON direction is INVERSE to alert level.** A lower DEFCON number = more threat. Don't accidentally sort ascending.
 - **Only escalate emails on transitions to 1 or 2.** A sustained DEFCON 2 (already at high) doesn't re-fire every cron tick — only transitions do.
 - **State file is separate from the main monitor state.** This keeps the email-trigger state isolated.
-- **ClawdWatch can be down.** Fall back to state file alone. If state file is also stale (>6h), treat as `none` and don't fire.
-- **DEFCON 1 is so rare that any false positive is bad.** Require cross-validation between two sources before treating a level-1 signal as real. ClawdWatch AND state file must agree.
+- **ClawdWatch (Lobster Edition) can be down.** Fall back to state file alone. If state file is also stale (>6h), treat as `none` and don't fire.
+- **DEFCON 1 is so rare that any false positive is bad.** Require cross-validation between two sources before treating a level-1 signal as real. ClawdWatch (Lobster Edition) AND state file must agree.
 
 ## Verification
 
