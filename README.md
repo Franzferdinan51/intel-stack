@@ -163,7 +163,7 @@ Pre-built cron jobs and orchestrator scripts under [`workflows/`](workflows/):
 
 ### Weather Pipeline
 
-- **`cron-weather-watchdog.json`** — Hermes cron definition. Fires every 15 min during active weather (SPC ENH+), every 60 min otherwise. Calls `weather-pull → weather-monitor → weather-email-trigger → weather-email-send`. Geographic scope filter rejects out-of-area alerts.
+- **`cron-weather-watchdog.json`** — Hermes cron definition. Fires 1x daily at 08:00. Pulls **broad weather patterns** (SPC Day 1-3 outlooks, NWS AFD, 7-day forecast) for an early heads-up rather than just immediate danger. Posts a 3-5 line Telegram brief every day so you see the outlook even on calm days. Calls `weather-pull → weather-monitor → weather-email-trigger → weather-email-send`. Emails only fire on **real escalation** (active warning, SPC HIGH Day 1). Level 4 WAKE-UP CALL is always operator-confirmed. Geographic scope filter rejects out-of-area alerts.
 
 ### DEFCON Pipeline
 
