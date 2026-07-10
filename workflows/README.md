@@ -7,7 +7,7 @@ Pre-built cron definitions and orchestrator scripts that drive the Intelligence 
 | File | Type | What it does |
 |---|---|---|
 | `cron-weather-watchdog.json` | Hermes cron | Runs `weather-pull → monitor → trigger → send` every 15 min during active weather, every hour otherwise |
-| `cron-defcon-watchdog.json` | Hermes cron | Runs `defcon-pull → monitor-email → trigger → send` every 15 min. Emails only fire on transitions to DEFCON 2 or 1. DEFCON 1 requires operator confirmation. |
+| `cron-defcon-watchdog.json` | Hermes cron | Runs `defcon-pull → monitor-email → trigger → send` 3x daily (08:00, 14:00, 20:00). Emails only fire on transitions to DEFCON 2 or 1. DEFCON 1 requires operator confirmation. Always posts a one-line Telegram summary. |
 | `agentmail-daily-healthcheck.json` | Hermes cron | Daily inbox sweep with anti-injection rules (does NOT download attachments) |
 | `orchestrate_alert.py` | Python script | Single-shot pipeline runner for weather (manual operator trigger) |
 | `alert-ladder.md` | Markdown ref | Visual 4-level weather + 2-level DEFCON escalation reference |

@@ -167,7 +167,7 @@ Pre-built cron jobs and orchestrator scripts under [`workflows/`](workflows/):
 
 ### DEFCON Pipeline
 
-- **`cron-defcon-watchdog.json`** — Hermes cron definition. Fires every 15 min. Calls `defcon-pull → defcon-monitor-email → defcon-email-trigger → defcon-email-send`. Emails only fire on **transitions** to DEFCON 2 (auto) or DEFCON 1 (operator `go` required).
+- **`cron-defcon-watchdog.json`** — Hermes cron definition. Fires 3 times daily at 08:00, 14:00, 20:00. Calls `defcon-pull → defcon-monitor-email → defcon-email-trigger → defcon-email-send`. Emails only fire on **transitions** to DEFCON 2 (auto) or DEFCON 1 (operator `go` required). Always posts a one-line Telegram summary so the operator sees the cron ran.
 
 ### Email Inbox Health
 
