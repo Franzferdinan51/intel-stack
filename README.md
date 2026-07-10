@@ -31,31 +31,19 @@ The architecture is **domain-agnostic**: `pull → monitor → trigger → send`
 
 ## Quick Start
 
+> ⚠️ **Read [`docs/setup.md`](docs/setup.md) FIRST.** It lists the 8 requirements you must satisfy (OpenClaw binary, Hermes skills directory, duckbot-brain plugin, LM Studio / OpenAI key, AgentMail account, env vars, Telegram bot, etc.) before any cron will work.
+
+Once setup is complete:
+
 ```bash
-# 1. Clone the repo
-git clone https://github.com/Franzferdinan51/intel-stack.git
-cd intel-stack
-
-# 2. Configure environment
-cp .env.example .env
-# Edit .env — see the Configuration section below for all 20+ knobs.
-# The minimum you need to set: AGENTMAIL_API_KEY, AGENTMAIL_INBOX,
-# ALERT_RECIPIENTS (weather), and DEFCON_ALERT_RECIPIENTS (DEFCON).
-
-# 3. Install Python deps
-pip install -r requirements.txt
-
-# 4. Drop the skills into your Hermes skills directory
-cp -r skills/* ~/.hermes/skills/
-
-# 5. Wire up the crons
-#   - cron-weather-watchdog.json (every 15 min during active weather)
-#   - cron-defcon-watchdog.json   (every 15 min, fires DEFCON 2 / asks for DEFCON 1)
-#   - agentmail-daily-healthcheck.json (daily 09:00 inbox sweep)
-# See workflows/README.md for Hermes cron registration.
+# Verify everything works (8-check command list)
+hermes skills list | grep -E "weather-|defcon-" | wc -l   # → 8
+hermes memory status                                    # → duckbot-brain active
+cd ~/duckbot-rag-memory && ./duck-memory doctor         # → all OK
+openclaw crons list                                     # → your crons registered
 ```
 
-After setup, a single cron tick does: **pull → monitor → decide → maybe send**. Both domains run independently — weather handles local storms, DEFCON handles global threat escalation.
+After verification, a single cron tick does: **pull → monitor → decide → maybe send**. Both domains run independently — weather handles local storms, DEFCON handles global threat escalation.
 
 You can also drive the pipeline manually from chat:
 

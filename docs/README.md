@@ -4,6 +4,7 @@ Detailed docs for the Intelligence Stack.
 
 | File | What it covers |
 |---|---|
+| [`setup.md`](setup.md) | **Required** OpenClaw + Hermes Agent setup steps before any cron will work. Must-read before installing. |
 | [`architecture.md`](architecture.md) | System overview, data flow per tick, skill contracts for both domains (weather + DEFCON), state schemas, failure modes |
 | [`faq.md`](faq.md) | Why-this-why-that, common questions, how it compares to existing weather apps |
 | [`security.md`](security.md) | Threat model, anti-injection rules, scope guarantees, data handling |
